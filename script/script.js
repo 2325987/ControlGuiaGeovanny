@@ -267,7 +267,7 @@ else {
 
 let guias =
     JSON.parse(
-        localStorage.getItem("guias")
+        localStorage.getItem("Gyguias")
     ) || [];
 
 
