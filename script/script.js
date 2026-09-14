@@ -1,34 +1,121 @@
-// ======================================================
-// CONTROL DE GUÍAS DE TRANSPORTE Y LOGÍSTICA
-// ======================================================
+/* =========================================================
+   CONTROL DE GUÍAS DE TRANSPORTE Y LOGÍSTICA
+   GEOVANNY CHAVES
+   ========================================================= */
 
 
-// ======================================================
-// 0. CONFIGURACIÓN DEL LOGIN
-// ======================================================
+/* =========================================================
+   CONFIGURACIÓN
+========================================================= */
+
+const CLAVE_STORAGE = "Gyguias";
 
 const USUARIO_CORRECTO = "Geovanny2026";
 const CLAVE_CORRECTA = "Gy1234";
 
+const CLAVE_SESION = "sesionActiva";
 
-// ======================================================
-// ELEMENTOS DEL LOGIN
-// ======================================================
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let Gyguias = [];
+
+let indiceSeleccionado = -1;
+
+
+/* =========================================================
+   CARGAR DATOS DESDE LOCALSTORAGE
+========================================================= */
+
+function cargarDatos() {
+
+    try {
+
+        const datosGuardados =
+            localStorage.getItem(CLAVE_STORAGE);
+
+        if (datosGuardados) {
+
+            const datos = JSON.parse(datosGuardados);
+
+            if (Array.isArray(datos)) {
+
+                Gyguias = datos;
+
+            } else {
+
+                Gyguias = [];
+
+            }
+
+        } else {
+
+            Gyguias = [];
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar Gyguias:",
+            error
+        );
+
+        Gyguias = [];
+
+    }
+
+}
+
+
+/* =========================================================
+   GUARDAR DATOS EN LOCALSTORAGE
+========================================================= */
+
+function guardarDatos() {
+
+    try {
+
+        localStorage.setItem(
+            CLAVE_STORAGE,
+            JSON.stringify(Gyguias)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Error al guardar Gyguias:",
+            error
+        );
+
+        mostrarMensaje(
+            "❌ No se pudieron guardar los datos.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   ELEMENTOS DEL LOGIN
+========================================================= */
 
 const login = document.getElementById("login");
 const sistema = document.getElementById("sistema");
 
-const usuarioInput =
-    document.getElementById("usuario");
+const usuario = document.getElementById("usuario");
+const clave = document.getElementById("clave");
 
-const claveInput =
-    document.getElementById("clave");
-
-const btnLogin =
-    document.getElementById("btnLogin");
-
-const mostrarClave =
-    document.getElementById("mostrarClave");
+const btnLogin = document.getElementById("btnLogin");
+const mostrarClave = document.getElementById("mostrarClave");
 
 const mensajeLogin =
     document.getElementById("mensajeLogin");
@@ -37,478 +124,768 @@ const cerrarSesion =
     document.getElementById("cerrarSesion");
 
 
-// ======================================================
-// VERIFICAR SESIÓN
-// ======================================================
+/* =========================================================
+   MOSTRAR / OCULTAR CONTRASEÑA
+========================================================= */
 
-const sesionActiva =
-    sessionStorage.getItem("sesionActiva");
+if (mostrarClave) {
 
+    mostrarClave.addEventListener(
+        "click",
+        function () {
 
-// ======================================================
-// MOSTRAR SISTEMA
-// ======================================================
+            if (clave.type === "password") {
 
-function mostrarSistema() {
+                clave.type = "text";
 
-    login.style.display = "none";
+                mostrarClave.textContent = "🙈";
 
-    sistema.classList.remove("sistema-oculto");
+            } else {
 
-}
+                clave.type = "password";
 
+                mostrarClave.textContent = "👁️";
 
-// ======================================================
-// MOSTRAR LOGIN
-// ======================================================
-
-function mostrarLogin() {
-
-    login.style.display = "flex";
-
-    sistema.classList.add("sistema-oculto");
-
-    usuarioInput.value = "";
-
-    claveInput.value = "";
-
-    mensajeLogin.textContent = "";
-
-    usuarioInput.focus();
-
-}
-
-
-// ======================================================
-// INICIAR SESIÓN
-// ======================================================
-
-function iniciarSesion() {
-
-    const usuario =
-        usuarioInput.value.trim();
-
-    const clave =
-        claveInput.value;
-
-
-    if (
-        usuario === "" ||
-        clave === ""
-    ) {
-
-        mensajeLogin.textContent =
-            "⚠️ Ingrese el usuario y la contraseña.";
-
-        mensajeLogin.className =
-            "mensaje-login error";
-
-        return;
-
-    }
-
-
-    if (
-        usuario === USUARIO_CORRECTO &&
-        clave === CLAVE_CORRECTA
-    ) {
-
-        sessionStorage.setItem(
-            "sesionActiva",
-            "true"
-        );
-
-
-        mensajeLogin.textContent =
-            "✅ Acceso correcto.";
-
-        mensajeLogin.className =
-            "mensaje-login exito";
-
-
-        setTimeout(
-            function () {
-
-                mostrarSistema();
-
-            },
-            500
-        );
-
-    }
-
-    else {
-
-        mensajeLogin.textContent =
-            "❌ Usuario o contraseña incorrectos.";
-
-        mensajeLogin.className =
-            "mensaje-login error";
-
-        claveInput.value = "";
-
-        claveInput.focus();
-
-    }
-
-}
-
-
-// ======================================================
-// BOTÓN LOGIN
-// ======================================================
-
-btnLogin.addEventListener(
-    "click",
-    iniciarSesion
-);
-
-
-// ======================================================
-// ENTER PARA LOGIN
-// ======================================================
-
-claveInput.addEventListener(
-    "keydown",
-    function (event) {
-
-        if (event.key === "Enter") {
-
-            iniciarSesion();
+            }
 
         }
-
-    }
-);
-
-
-// ======================================================
-// MOSTRAR / OCULTAR CONTRASEÑA
-// ======================================================
-
-mostrarClave.addEventListener(
-    "click",
-    function () {
-
-        if (
-            claveInput.type === "password"
-        ) {
-
-            claveInput.type = "text";
-
-            mostrarClave.textContent = "🙈";
-
-        }
-
-        else {
-
-            claveInput.type = "password";
-
-            mostrarClave.textContent = "👁️";
-
-        }
-
-    }
-);
-
-
-// ======================================================
-// CERRAR SESIÓN
-// ======================================================
-
-cerrarSesion.addEventListener(
-    "click",
-    function () {
-
-        const confirmar =
-            confirm(
-                "¿Está seguro de cerrar la sesión?"
-            );
-
-
-        if (!confirmar) {
-
-            return;
-
-        }
-
-
-        sessionStorage.removeItem(
-            "sesionActiva"
-        );
-
-
-        mostrarLogin();
-
-    }
-);
-
-
-// ======================================================
-// COMPROBAR SESIÓN AL CARGAR
-// ======================================================
-
-if (sesionActiva === "true") {
-
-    mostrarSistema();
-
-}
-
-else {
-
-    mostrarLogin();
-
-}
-
-
-// ======================================================
-// 1. CARGAR GUÍAS
-// ======================================================
-
-let guias =
-    JSON.parse(
-        localStorage.getItem("Gyguias")
-    ) || [];
-
-
-// ======================================================
-// 2. ELEMENTOS DEL FORMULARIO
-// ======================================================
-
-const guiaInput =
-    document.getElementById("guia");
-
-const numeroRutaInput =
-    document.getElementById("numeroRuta");
-
-const fechaInput =
-    document.getElementById("fecha");
-
-const placaInput =
-    document.getElementById("placa");
-
-const lugarInput =
-    document.getElementById("lugar");
-
-const montoInput =
-    document.getElementById("monto");
-
-const montoDeducibleInput =
-    document.getElementById("montoDeducible");
-
-const totalPagarInput =
-    document.getElementById("totalPagar");
-
-const hojasInput =
-    document.getElementById("hojas");
-
-const estadoInput =
-    document.getElementById("estado");
-
-
-// ======================================================
-// 3. ELEMENTOS DE LA TABLA
-// ======================================================
-
-const tablaGuias =
-    document.getElementById("tablaGuias");
-
-const contador =
-    document.getElementById("contador");
-
-const salida =
-    document.getElementById("salida");
-
-
-// ======================================================
-// 4. BOTONES
-// ======================================================
-
-const botonAgregar =
-    document.getElementById("agregar");
-
-const botonModificar =
-    document.getElementById("modificar");
-
-const botonEliminar =
-    document.getElementById("eliminar");
-
-const botonObtener =
-    document.getElementById("obtener");
-
-const botonLimpiar =
-    document.getElementById("limpiar");
-
-
-// ======================================================
-// 5. BÚSQUEDA
-// ======================================================
-
-const buscarGuiaInput =
-    document.getElementById("buscarGuia");
-
-
-// ======================================================
-// 6. FILTROS
-// ======================================================
-
-const filtrarRutaInput =
-    document.getElementById("filtrarRuta");
-
-const filtrarPlacaInput =
-    document.getElementById("filtrarPlaca");
-
-const filtrarEstadoInput =
-    document.getElementById("filtrarEstado");
-
-const ordenarInput =
-    document.getElementById("ordenar");
-
-const botonQuitarFiltros =
-    document.getElementById("quitarFiltros");
-
-
-// ======================================================
-// 7. CALCULAR TOTAL A PAGAR
-// ======================================================
-//
-// TOTAL A PAGAR = MONTO - MONTO DEDUCIBLE
-//
-// El monto deducible no puede ser negativo.
-// El total nunca será menor que 0.
-// ======================================================
-
-function calcularTotal() {
-
-    const monto =
-        Number(montoInput.value) || 0;
-
-    let deducible =
-        Number(montoDeducibleInput.value) || 0;
-
-
-    if (deducible < 0) {
-
-        deducible = 0;
-
-        montoDeducibleInput.value = 0;
-
-    }
-
-
-    let total =
-        monto - deducible;
-
-
-    if (total < 0) {
-
-        total = 0;
-
-    }
-
-
-    totalPagarInput.value =
-        total.toFixed(2);
-
-}
-
-
-// ======================================================
-// ACTUALIZAR TOTAL CUANDO CAMBIA EL MONTO
-// ======================================================
-
-montoInput.addEventListener(
-    "input",
-    calcularTotal
-);
-
-
-// ======================================================
-// ACTUALIZAR TOTAL CUANDO CAMBIA EL DEDUCIBLE
-// ======================================================
-
-montoDeducibleInput.addEventListener(
-    "input",
-    calcularTotal
-);
-
-
-// ======================================================
-// 8. GUARDAR DATOS
-// ======================================================
-
-function guardarDatos() {
-
-    localStorage.setItem(
-        "guias",
-        JSON.stringify(guias)
     );
 
 }
 
 
-// ======================================================
-// 9. MOSTRAR MENSAJE
-// ======================================================
+/* =========================================================
+   INICIAR SESIÓN
+========================================================= */
 
-function mostrarMensaje(
-    mensaje,
-    tipo = "normal"
-) {
+function iniciarSesion() {
 
-    salida.textContent = mensaje;
+    const usuarioIngresado =
+        usuario.value.trim();
 
+    const claveIngresada =
+        clave.value;
 
-    if (tipo === "exito") {
+    if (
+        usuarioIngresado === USUARIO_CORRECTO &&
+        claveIngresada === CLAVE_CORRECTA
+    ) {
 
-        salida.style.background =
-            "#dcfce7";
+        sessionStorage.setItem(
+            CLAVE_SESION,
+            "true"
+        );
 
-        salida.style.color =
-            "#166534";
+        mostrarSistema();
 
-    }
+        mensajeLogin.textContent = "";
 
-    else if (tipo === "error") {
+        usuario.value = "";
+        clave.value = "";
 
-        salida.style.background =
-            "#fee2e2";
+    } else {
 
-        salida.style.color =
-            "#991b1b";
+        mensajeLogin.textContent =
+            "❌ Usuario o contraseña incorrectos.";
 
-    }
-
-    else if (tipo === "advertencia") {
-
-        salida.style.background =
-            "#fef3c7";
-
-        salida.style.color =
-            "#92400e";
-
-    }
-
-    else {
-
-        salida.style.background =
-            "#f1f5f9";
-
-        salida.style.color =
-            "#334155";
+        mensajeLogin.classList.add("error");
 
     }
 
 }
 
 
-// ======================================================
-// 10. CLASE PARA ESTADO
-// ======================================================
+/* =========================================================
+   MOSTRAR SISTEMA
+========================================================= */
 
-function obtenerClaseEstado(estado) {
+function mostrarSistema() {
 
-    switch (estado) {
+    if (login) {
+
+        login.style.display = "none";
+
+    }
+
+    if (sistema) {
+
+        sistema.classList.remove(
+            "sistema-oculto"
+        );
+
+        sistema.style.display = "block";
+
+    }
+
+    mostrarGuias();
+
+}
+
+
+/* =========================================================
+   MOSTRAR LOGIN
+========================================================= */
+
+function mostrarLogin() {
+
+    if (login) {
+
+        login.style.display = "flex";
+
+    }
+
+    if (sistema) {
+
+        sistema.classList.add(
+            "sistema-oculto"
+        );
+
+        sistema.style.display = "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   VERIFICAR SESIÓN
+========================================================= */
+
+function verificarSesion() {
+
+    const sesion =
+        sessionStorage.getItem(
+            CLAVE_SESION
+        );
+
+    if (sesion === "true") {
+
+        mostrarSistema();
+
+    } else {
+
+        mostrarLogin();
+
+    }
+
+}
+
+
+/* =========================================================
+   CERRAR SESIÓN
+========================================================= */
+
+if (cerrarSesion) {
+
+    cerrarSesion.addEventListener(
+        "click",
+        function () {
+
+            sessionStorage.removeItem(
+                CLAVE_SESION
+            );
+
+            indiceSeleccionado = -1;
+
+            limpiarFormulario();
+
+            mostrarLogin();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   LOGIN CON BOTÓN
+========================================================= */
+
+if (btnLogin) {
+
+    btnLogin.addEventListener(
+        "click",
+        iniciarSesion
+    );
+
+}
+
+
+/* =========================================================
+   LOGIN CON ENTER
+========================================================= */
+
+if (usuario) {
+
+    usuario.addEventListener(
+        "keydown",
+        function (evento) {
+
+            if (evento.key === "Enter") {
+
+                iniciarSesion();
+
+            }
+
+        }
+    );
+
+}
+
+
+if (clave) {
+
+    clave.addEventListener(
+        "keydown",
+        function (evento) {
+
+            if (evento.key === "Enter") {
+
+                iniciarSesion();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ELEMENTOS DEL FORMULARIO
+========================================================= */
+
+const guia =
+    document.getElementById("guia");
+
+const numeroRuta =
+    document.getElementById("numeroRuta");
+
+const fecha =
+    document.getElementById("fecha");
+
+const placa =
+    document.getElementById("placa");
+
+const lugar =
+    document.getElementById("lugar");
+
+const monto =
+    document.getElementById("monto");
+
+const montoDeducible =
+    document.getElementById(
+        "montoDeducible"
+    );
+
+const totalPagar =
+    document.getElementById(
+        "totalPagar"
+    );
+
+const hojas =
+    document.getElementById("hojas");
+
+const estado =
+    document.getElementById("estado");
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+const agregar =
+    document.getElementById("agregar");
+
+const modificar =
+    document.getElementById("modificar");
+
+const eliminar =
+    document.getElementById("eliminar");
+
+const obtener =
+    document.getElementById("obtener");
+
+const limpiar =
+    document.getElementById("limpiar");
+
+
+/* =========================================================
+   TABLA Y MENSAJES
+========================================================= */
+
+const tablaGuias =
+    document.getElementById(
+        "tablaGuias"
+    );
+
+const contador =
+    document.getElementById(
+        "contador"
+    );
+
+const salida =
+    document.getElementById("salida");
+
+
+/* =========================================================
+   BÚSQUEDA Y FILTROS
+========================================================= */
+
+const buscarGuia =
+    document.getElementById(
+        "buscarGuia"
+    );
+
+const filtrarRuta =
+    document.getElementById(
+        "filtrarRuta"
+    );
+
+const filtrarPlaca =
+    document.getElementById(
+        "filtrarPlaca"
+    );
+
+const filtrarEstado =
+    document.getElementById(
+        "filtrarEstado"
+    );
+
+const ordenar =
+    document.getElementById(
+        "ordenar"
+    );
+
+const quitarFiltros =
+    document.getElementById(
+        "quitarFiltros"
+    );
+
+
+/* =========================================================
+   MOSTRAR MENSAJES
+========================================================= */
+
+function mostrarMensaje(
+    mensaje,
+    tipo = ""
+) {
+
+    if (!salida) return;
+
+    salida.textContent = mensaje;
+
+    salida.className = "mensaje";
+
+    if (tipo) {
+
+        salida.classList.add(tipo);
+
+    }
+
+}
+
+
+/* =========================================================
+   CALCULAR TOTAL
+========================================================= */
+
+function calcularTotal() {
+
+    const valorMonto =
+        parseFloat(monto.value) || 0;
+
+    let valorDeducible =
+        parseFloat(
+            montoDeducible.value
+        ) || 0;
+
+
+    if (valorDeducible < 0) {
+
+        valorDeducible = 0;
+
+        montoDeducible.value = 0;
+
+    }
+
+
+    if (
+        valorMonto > 0 &&
+        valorDeducible > valorMonto
+    ) {
+
+        valorDeducible = valorMonto;
+
+        montoDeducible.value =
+            valorMonto;
+
+    }
+
+
+    const total =
+        Math.max(
+            0,
+            valorMonto - valorDeducible
+        );
+
+
+    totalPagar.value =
+        total.toFixed(2);
+
+}
+
+
+/* =========================================================
+   EVENTOS PARA CALCULAR TOTAL
+========================================================= */
+
+if (monto) {
+
+    monto.addEventListener(
+        "input",
+        calcularTotal
+    );
+
+}
+
+if (montoDeducible) {
+
+    montoDeducible.addEventListener(
+        "input",
+        calcularTotal
+    );
+
+}
+
+
+/* =========================================================
+   VALIDAR FORMULARIO
+========================================================= */
+
+function validarFormulario() {
+
+    const numeroGuia =
+        guia.value.trim();
+
+    const ruta =
+        numeroRuta.value.trim();
+
+    const fechaValor =
+        fecha.value.trim();
+
+    const placaValor =
+        placa.value.trim();
+
+    const lugarValor =
+        lugar.value.trim();
+
+    const montoValor =
+        parseFloat(monto.value);
+
+    const deducibleValor =
+        parseFloat(
+            montoDeducible.value
+        );
+
+    const hojasValor =
+        parseInt(hojas.value);
+
+    const estadoValor =
+        estado.value;
+
+
+    if (!numeroGuia) {
+
+        mostrarMensaje(
+            "❌ Debe ingresar el número de guía.",
+            "error"
+        );
+
+        guia.focus();
+
+        return false;
+
+    }
+
+
+    if (!ruta) {
+
+        mostrarMensaje(
+            "❌ Debe ingresar el número de ruta.",
+            "error"
+        );
+
+        numeroRuta.focus();
+
+        return false;
+
+    }
+
+
+    if (Number(ruta) < 0) {
+
+        mostrarMensaje(
+            "❌ El número de ruta no puede ser negativo.",
+            "error"
+        );
+
+        numeroRuta.focus();
+
+        return false;
+
+    }
+
+
+    if (!fechaValor) {
+
+        mostrarMensaje(
+            "❌ Debe seleccionar la fecha.",
+            "error"
+        );
+
+        fecha.focus();
+
+        return false;
+
+    }
+
+
+    if (!placaValor) {
+
+        mostrarMensaje(
+            "❌ Debe ingresar el número de placa.",
+            "error"
+        );
+
+        placa.focus();
+
+        return false;
+
+    }
+
+
+    if (!lugarValor) {
+
+        mostrarMensaje(
+            "❌ Debe ingresar el lugar o destino.",
+            "error"
+        );
+
+        lugar.focus();
+
+        return false;
+
+    }
+
+
+    if (
+        isNaN(montoValor) ||
+        montoValor <= 0
+    ) {
+
+        mostrarMensaje(
+            "❌ El monto debe ser mayor que 0.",
+            "error"
+        );
+
+        monto.focus();
+
+        return false;
+
+    }
+
+
+    if (
+        isNaN(deducibleValor) ||
+        deducibleValor < 0
+    ) {
+
+        mostrarMensaje(
+            "❌ El monto deducible no puede ser negativo.",
+            "error"
+        );
+
+        montoDeducible.focus();
+
+        return false;
+
+    }
+
+
+    if (
+        deducibleValor > montoValor
+    ) {
+
+        mostrarMensaje(
+            "❌ El monto deducible no puede ser mayor que el monto.",
+            "error"
+        );
+
+        montoDeducible.focus();
+
+        return false;
+
+    }
+
+
+    if (
+        isNaN(hojasValor) ||
+        hojasValor < 1 ||
+        hojasValor > 10
+    ) {
+
+        mostrarMensaje(
+            "❌ La cantidad de hojas debe estar entre 1 y 10.",
+            "error"
+        );
+
+        hojas.focus();
+
+        return false;
+
+    }
+
+
+    if (!estadoValor) {
+
+        mostrarMensaje(
+            "❌ Debe seleccionar un estado.",
+            "error"
+        );
+
+        estado.focus();
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   OBTENER DATOS DEL FORMULARIO
+========================================================= */
+
+function obtenerDatosFormulario() {
+
+    const valorMonto =
+        parseFloat(monto.value);
+
+    const valorDeducible =
+        parseFloat(
+            montoDeducible.value
+        ) || 0;
+
+    const valorTotal =
+        Math.max(
+            0,
+            valorMonto - valorDeducible
+        );
+
+
+    return {
+
+        guia:
+            guia.value.trim(),
+
+        numeroRuta:
+            Number(numeroRuta.value),
+
+        fecha:
+            fecha.value,
+
+        placa:
+            placa.value.trim().toUpperCase(),
+
+        lugar:
+            lugar.value.trim(),
+
+        monto:
+            valorMonto,
+
+        montoDeducible:
+            valorDeducible,
+
+        totalPagar:
+            valorTotal,
+
+        hojas:
+            Number(hojas.value),
+
+        estado:
+            estado.value
+
+    };
+
+}
+
+
+/* =========================================================
+   LIMPIAR FORMULARIO
+========================================================= */
+
+function limpiarFormulario() {
+
+    guia.value = "";
+
+    numeroRuta.value = "";
+
+    fecha.value = "";
+
+    placa.value = "";
+
+    lugar.value = "";
+
+    monto.value = "";
+
+    montoDeducible.value = "0";
+
+    totalPagar.value = "";
+
+    hojas.value = "";
+
+    estado.value = "";
+
+    indiceSeleccionado = -1;
+
+}
+
+
+/* =========================================================
+   FORMATO DE DINERO
+========================================================= */
+
+function formatoDinero(valor) {
+
+    const numero =
+        Number(valor) || 0;
+
+    return "₡" +
+        numero.toLocaleString(
+            "es-CR",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+
+}
+
+
+/* =========================================================
+   CLASE DEL ESTADO
+========================================================= */
+
+function obtenerClaseEstado(
+    estadoValor
+) {
+
+    switch (estadoValor) {
 
         case "Aprobadas":
 
@@ -549,64 +926,53 @@ function obtenerClaseEstado(estado) {
 }
 
 
-// ======================================================
-// 11. ACTUALIZAR FILTRO DE RUTAS
-// ======================================================
+/* =========================================================
+   ACTUALIZAR FILTRO DE RUTAS
+========================================================= */
 
 function actualizarFiltroRutas() {
 
-    const rutaSeleccionada =
-        filtrarRutaInput.value;
-
+    const valorActual =
+        filtrarRuta.value;
 
     const rutas = [
         ...new Set(
-            guias
-                .map(function (item) {
-
-                    return item.numeroRuta;
-
-                })
-                .filter(function (ruta) {
-
-                    return ruta !== undefined &&
-                           ruta !== null &&
-                           ruta !== "";
-
-                })
+            Gyguias
+                .map(item => item.numeroRuta)
+                .filter(
+                    ruta =>
+                        ruta !== undefined &&
+                        ruta !== null &&
+                        ruta !== ""
+                )
         )
     ];
 
-
     rutas.sort(
-        function (a, b) {
-
-            return Number(a) - Number(b);
-
-        }
+        (a, b) =>
+            Number(a) - Number(b)
     );
 
 
-    filtrarRutaInput.innerHTML = `
-        <option value="todos">
-            Todas las rutas
-        </option>
-    `;
+    filtrarRuta.innerHTML =
+        '<option value="todos">Todas las rutas</option>';
 
 
     rutas.forEach(
         function (ruta) {
 
-            const opcion =
-                document.createElement("option");
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-            opcion.value = ruta;
+            option.value = ruta;
 
-            opcion.textContent =
-                "Ruta " + ruta;
+            option.textContent =
+                ruta;
 
-            filtrarRutaInput.appendChild(
-                opcion
+            filtrarRuta.appendChild(
+                option
             );
 
         }
@@ -614,19 +980,17 @@ function actualizarFiltroRutas() {
 
 
     if (
-        rutas.map(String).includes(
-            String(rutaSeleccionada)
+        rutas.includes(
+            Number(valorActual)
         )
     ) {
 
-        filtrarRutaInput.value =
-            rutaSeleccionada;
+        filtrarRuta.value =
+            valorActual;
 
-    }
+    } else {
 
-    else {
-
-        filtrarRutaInput.value =
+        filtrarRuta.value =
             "todos";
 
     }
@@ -634,69 +998,60 @@ function actualizarFiltroRutas() {
 }
 
 
-// ======================================================
-// 12. ACTUALIZAR FILTRO DE PLACAS
-// ======================================================
+/* =========================================================
+   ACTUALIZAR FILTRO DE PLACAS
+========================================================= */
 
 function actualizarFiltroPlacas() {
 
-    const placaSeleccionada =
-        filtrarPlacaInput.value;
-
+    const valorActual =
+        filtrarPlaca.value;
 
     const placas = [
         ...new Set(
-            guias
-                .map(function (item) {
-
-                    return item.placa;
-
-                })
-                .filter(function (placa) {
-
-                    return placa &&
-                           placa.trim() !== "";
-
-                })
+            Gyguias
+                .map(item => item.placa)
+                .filter(
+                    placa =>
+                        placa &&
+                        placa.trim() !== ""
+                )
         )
     ];
 
 
     placas.sort(
-        function (a, b) {
-
-            return a.localeCompare(
+        (a, b) =>
+            a.localeCompare(
                 b,
-                undefined,
+                "es",
                 {
-                    numeric: true,
                     sensitivity: "base"
                 }
-            );
-
-        }
+            )
     );
 
 
-    filtrarPlacaInput.innerHTML = `
-        <option value="todos">
-            Todas las placas
-        </option>
-    `;
+    filtrarPlaca.innerHTML =
+        '<option value="todos">Todas las placas</option>';
 
 
     placas.forEach(
-        function (placa) {
+        function (placaValor) {
 
-            const opcion =
-                document.createElement("option");
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-            opcion.value = placa;
+            option.value =
+                placaValor;
 
-            opcion.textContent = placa;
+            option.textContent =
+                placaValor;
 
-            filtrarPlacaInput.appendChild(
-                opcion
+            filtrarPlaca.appendChild(
+                option
             );
 
         }
@@ -704,19 +1059,15 @@ function actualizarFiltroPlacas() {
 
 
     if (
-        placas.includes(
-            placaSeleccionada
-        )
+        placas.includes(valorActual)
     ) {
 
-        filtrarPlacaInput.value =
-            placaSeleccionada;
+        filtrarPlaca.value =
+            valorActual;
 
-    }
+    } else {
 
-    else {
-
-        filtrarPlacaInput.value =
+        filtrarPlaca.value =
             "todos";
 
     }
@@ -724,656 +1075,416 @@ function actualizarFiltroPlacas() {
 }
 
 
-// ======================================================
-// 13. MOSTRAR GUÍAS
-// ======================================================
+/* =========================================================
+   ORDENAR GUÍAS
+========================================================= */
+
+function ordenarGuias(lista) {
+
+    const orden =
+        ordenar.value;
+
+
+    const copia =
+        [...lista];
+
+
+    switch (orden) {
+
+        case "guiaAsc":
+
+            copia.sort(
+                (a, b) =>
+                    String(a.guia)
+                        .localeCompare(
+                            String(b.guia),
+                            "es",
+                            {
+                                numeric: true
+                            }
+                        )
+            );
+
+            break;
+
+
+        case "guiaDesc":
+
+            copia.sort(
+                (a, b) =>
+                    String(b.guia)
+                        .localeCompare(
+                            String(a.guia),
+                            "es",
+                            {
+                                numeric: true
+                            }
+                        )
+            );
+
+            break;
+
+
+        case "rutaAsc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(a.numeroRuta) -
+                    Number(b.numeroRuta)
+            );
+
+            break;
+
+
+        case "rutaDesc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(b.numeroRuta) -
+                    Number(a.numeroRuta)
+            );
+
+            break;
+
+
+        case "fechaAsc":
+
+            copia.sort(
+                (a, b) =>
+                    String(a.fecha)
+                        .localeCompare(
+                            String(b.fecha)
+                        )
+            );
+
+            break;
+
+
+        case "fechaDesc":
+
+            copia.sort(
+                (a, b) =>
+                    String(b.fecha)
+                        .localeCompare(
+                            String(a.fecha)
+                        )
+            );
+
+            break;
+
+
+        case "placaAsc":
+
+            copia.sort(
+                (a, b) =>
+                    String(a.placa)
+                        .localeCompare(
+                            String(b.placa),
+                            "es"
+                        )
+            );
+
+            break;
+
+
+        case "placaDesc":
+
+            copia.sort(
+                (a, b) =>
+                    String(b.placa)
+                        .localeCompare(
+                            String(a.placa),
+                            "es"
+                        )
+            );
+
+            break;
+
+
+        case "montoAsc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(a.monto) -
+                    Number(b.monto)
+            );
+
+            break;
+
+
+        case "montoDesc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(b.monto) -
+                    Number(a.monto)
+            );
+
+            break;
+
+
+        case "deducibleAsc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(a.montoDeducible) -
+                    Number(b.montoDeducible)
+            );
+
+            break;
+
+
+        case "deducibleDesc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(b.montoDeducible) -
+                    Number(a.montoDeducible)
+            );
+
+            break;
+
+
+        case "totalAsc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(a.totalPagar) -
+                    Number(b.totalPagar)
+            );
+
+            break;
+
+
+        case "totalDesc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(b.totalPagar) -
+                    Number(a.totalPagar)
+            );
+
+            break;
+
+
+        case "hojasAsc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(a.hojas) -
+                    Number(b.hojas)
+            );
+
+            break;
+
+
+        case "hojasDesc":
+
+            copia.sort(
+                (a, b) =>
+                    Number(b.hojas) -
+                    Number(a.hojas)
+            );
+
+            break;
+
+    }
+
+
+    return copia;
+
+}
+
+
+/* =========================================================
+   MOSTRAR GUÍAS EN TABLA
+========================================================= */
 
 function mostrarGuias() {
 
+    if (!tablaGuias) return;
+
+
+    tablaGuias.innerHTML = "";
+
+
     const textoBusqueda =
-        buscarGuiaInput.value
+        buscarGuia.value
             .trim()
             .toLowerCase();
 
 
-    const rutaFiltro =
-        filtrarRutaInput.value;
+    const rutaSeleccionada =
+        filtrarRuta.value;
 
 
-    const placaFiltro =
-        filtrarPlacaInput.value;
+    const placaSeleccionada =
+        filtrarPlaca.value;
 
 
-    const estadoFiltro =
-        filtrarEstadoInput.value;
+    const estadoSeleccionado =
+        filtrarEstado.value;
 
 
-    const orden =
-        ordenarInput.value;
+    let lista =
+        Gyguias.filter(
+            function (item) {
 
-
-    let guiasMostrar =
-        [...guias];
-
-
-// ======================================================
-// BUSCAR POR GUÍA
-// ======================================================
-
-    if (
-        textoBusqueda !== ""
-    ) {
-
-        guiasMostrar =
-            guiasMostrar.filter(
-                function (item) {
-
-                    return (
-                        item.guia || ""
-                    )
+                const coincideGuia =
+                    !textoBusqueda ||
+                    String(item.guia)
                         .toLowerCase()
                         .includes(
                             textoBusqueda
                         );
 
-                }
-            );
 
-    }
-
-
-// ======================================================
-// FILTRAR POR RUTA
-// ======================================================
-
-    if (
-        rutaFiltro !== "todos"
-    ) {
-
-        guiasMostrar =
-            guiasMostrar.filter(
-                function (item) {
-
-                    return String(
-                        item.numeroRuta || ""
-                    ) === String(
-                        rutaFiltro
-                    );
-
-                }
-            );
-
-    }
+                const coincideRuta =
+                    rutaSeleccionada === "todos" ||
+                    String(item.numeroRuta) ===
+                    String(rutaSeleccionada);
 
 
-// ======================================================
-// FILTRAR POR PLACA
-// ======================================================
-
-    if (
-        placaFiltro !== "todos"
-    ) {
-
-        guiasMostrar =
-            guiasMostrar.filter(
-                function (item) {
-
-                    return (
-                        item.placa || ""
-                    )
-                        .toLowerCase() ===
-                        placaFiltro.toLowerCase();
-
-                }
-            );
-
-    }
+                const coincidePlaca =
+                    placaSeleccionada === "todos" ||
+                    String(item.placa)
+                        .toUpperCase() ===
+                    String(placaSeleccionada)
+                        .toUpperCase();
 
 
-// ======================================================
-// FILTRAR POR ESTADO
-// ======================================================
+                const coincideEstado =
+                    estadoSeleccionado === "todos" ||
+                    item.estado ===
+                    estadoSeleccionado;
 
-    if (
-        estadoFiltro !== "todos"
-    ) {
-
-        guiasMostrar =
-            guiasMostrar.filter(
-                function (item) {
-
-                    return (
-                        item.estado ===
-                        estadoFiltro
-                    );
-
-                }
-            );
-
-    }
-
-
-// ======================================================
-// ORDENAR
-// ======================================================
-
-    guiasMostrar.sort(
-        function (a, b) {
-
-
-// ------------------------------------------------------
-// GUÍA
-// ------------------------------------------------------
-
-            if (
-                orden === "guiaAsc"
-            ) {
 
                 return (
-                    a.guia || ""
-                ).localeCompare(
-                    b.guia || "",
-                    undefined,
-                    {
-                        numeric: true,
-                        sensitivity: "base"
-                    }
+                    coincideGuia &&
+                    coincideRuta &&
+                    coincidePlaca &&
+                    coincideEstado
                 );
 
             }
+        );
 
 
-            if (
-                orden === "guiaDesc"
-            ) {
+    lista =
+        ordenarGuias(lista);
 
-                return (
-                    b.guia || ""
-                ).localeCompare(
-                    a.guia || "",
-                    undefined,
-                    {
-                        numeric: true,
-                        sensitivity: "base"
-                    }
-                );
 
-            }
+    contador.textContent =
+        lista.length === 1
+            ? "1 guía"
+            : `${lista.length} guías`;
 
 
-// ------------------------------------------------------
-// RUTA
-// ------------------------------------------------------
-
-            if (
-                orden === "rutaAsc"
-            ) {
-
-                return (
-                    Number(a.numeroRuta) || 0
-                ) -
-                (
-                    Number(b.numeroRuta) || 0
-                );
-
-            }
-
-
-            if (
-                orden === "rutaDesc"
-            ) {
-
-                return (
-                    Number(b.numeroRuta) || 0
-                ) -
-                (
-                    Number(a.numeroRuta) || 0
-                );
-
-            }
-
-
-// ------------------------------------------------------
-// FECHA
-// ------------------------------------------------------
-
-            if (
-                orden === "fechaAsc"
-            ) {
-
-                return new Date(
-                    a.fecha
-                ) -
-                new Date(
-                    b.fecha
-                );
-
-            }
-
-
-            if (
-                orden === "fechaDesc"
-            ) {
-
-                return new Date(
-                    b.fecha
-                ) -
-                new Date(
-                    a.fecha
-                );
-
-            }
-
-
-// ------------------------------------------------------
-// PLACA
-// ------------------------------------------------------
-
-            if (
-                orden === "placaAsc"
-            ) {
-
-                return (
-                    a.placa || ""
-                ).localeCompare(
-                    b.placa || "",
-                    undefined,
-                    {
-                        numeric: true,
-                        sensitivity: "base"
-                    }
-                );
-
-            }
-
-
-            if (
-                orden === "placaDesc"
-            ) {
-
-                return (
-                    b.placa || ""
-                ).localeCompare(
-                    a.placa || "",
-                    undefined,
-                    {
-                        numeric: true,
-                        sensitivity: "base"
-                    }
-                );
-
-            }
-
-
-// ------------------------------------------------------
-// MONTO
-// ------------------------------------------------------
-
-            if (
-                orden === "montoAsc"
-            ) {
-
-                return (
-                    Number(a.monto) || 0
-                ) -
-                (
-                    Number(b.monto) || 0
-                );
-
-            }
-
-
-            if (
-                orden === "montoDesc"
-            ) {
-
-                return (
-                    Number(b.monto) || 0
-                ) -
-                (
-                    Number(a.monto) || 0
-                );
-
-            }
-
-
-// ------------------------------------------------------
-// DEDUCIBLE
-// ------------------------------------------------------
-
-            if (
-                orden === "deducibleAsc"
-            ) {
-
-                return (
-                    Number(a.montoDeducible) || 0
-                ) -
-                (
-                    Number(b.montoDeducible) || 0
-                );
-
-            }
-
-
-            if (
-                orden === "deducibleDesc"
-            ) {
-
-                return (
-                    Number(b.montoDeducible) || 0
-                ) -
-                (
-                    Number(a.montoDeducible) || 0
-                );
-
-            }
-
-
-// ------------------------------------------------------
-// TOTAL
-// ------------------------------------------------------
-
-            if (
-                orden === "totalAsc"
-            ) {
-
-                return (
-                    Number(a.totalPagar) || 0
-                ) -
-                (
-                    Number(b.totalPagar) || 0
-                );
-
-            }
-
-
-            if (
-                orden === "totalDesc"
-            ) {
-
-                return (
-                    Number(b.totalPagar) || 0
-                ) -
-                (
-                    Number(a.totalPagar) || 0
-                );
-
-            }
-
-
-// ------------------------------------------------------
-// HOJAS
-// ------------------------------------------------------
-
-            if (
-                orden === "hojasAsc"
-            ) {
-
-                return (
-                    Number(a.hojas) || 0
-                ) -
-                (
-                    Number(b.hojas) || 0
-                );
-
-            }
-
-
-            if (
-                orden === "hojasDesc"
-            ) {
-
-                return (
-                    Number(b.hojas) || 0
-                ) -
-                (
-                    Number(a.hojas) || 0
-                );
-
-            }
-
-
-            return 0;
-
-        }
-    );
-
-
-// ======================================================
-// LIMPIAR TABLA
-// ======================================================
-
-    tablaGuias.innerHTML = "";
-
-
-// ======================================================
-// NO HAY RESULTADOS
-// ======================================================
-
-    if (
-        guiasMostrar.length === 0
-    ) {
+    if (lista.length === 0) {
 
         tablaGuias.innerHTML = `
-
             <tr>
-
-                <td colspan="11">
-
-                    🔎 No se encontraron guías.
-
+                <td colspan="11" class="sin-datos">
+                    No hay guías que coincidan con la búsqueda.
                 </td>
-
             </tr>
-
         `;
+
+        return;
 
     }
 
 
-// ======================================================
-// MOSTRAR GUÍAS
-// ======================================================
-
-    guiasMostrar.forEach(
+    lista.forEach(
         function (item) {
 
+            const indiceReal =
+                Gyguias.indexOf(item);
+
+
             const fila =
-                document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
 
 
             fila.innerHTML = `
 
                 <td>
-
                     <strong>
-                        ${item.guia || "-"}
+                        ${escaparHTML(item.guia)}
                     </strong>
-
                 </td>
 
-
                 <td>
-
-                    ${item.numeroRuta || "-"}
-
+                    ${escaparHTML(item.numeroRuta)}
                 </td>
 
-
                 <td>
-
-                    ${item.fecha || "-"}
-
+                    ${escaparHTML(item.fecha)}
                 </td>
 
+                <td>
+                    ${escaparHTML(item.placa)}
+                </td>
 
                 <td>
+                    ${escaparHTML(item.lugar)}
+                </td>
 
+                <td>
+                    ${formatoDinero(item.monto)}
+                </td>
+
+                <td>
+                    ${formatoDinero(item.montoDeducible)}
+                </td>
+
+                <td>
                     <strong>
-                        ${item.placa || "-"}
+                        ${formatoDinero(item.totalPagar)}
                     </strong>
-
                 </td>
-
 
                 <td>
-
-                    ${item.lugar || "-"}
-
+                    ${escaparHTML(item.hojas)}
                 </td>
-
-
-                <td>
-
-                    ₡${Number(
-                        item.monto || 0
-                    ).toLocaleString(
-                        "es-CR",
-                        {
-                            minimumFractionDigits: 2
-                        }
-                    )}
-
-                </td>
-
-
-                <td>
-
-                    ₡${Number(
-                        item.montoDeducible || 0
-                    ).toLocaleString(
-                        "es-CR",
-                        {
-                            minimumFractionDigits: 2
-                        }
-                    )}
-
-                </td>
-
-
-                <td>
-
-                    <strong>
-
-                        ₡${Number(
-                            item.totalPagar || 0
-                        ).toLocaleString(
-                            "es-CR",
-                            {
-                                minimumFractionDigits: 2
-                            }
-                        )}
-
-                    </strong>
-
-                </td>
-
-
-                <td>
-
-                    ${item.hojas || 0}
-
-                </td>
-
 
                 <td>
 
                     <span
                         class="estado ${obtenerClaseEstado(item.estado)}"
                     >
-
-                        ${item.estado || "-"}
-
+                        ${escaparHTML(item.estado)}
                     </span>
 
                 </td>
 
-
                 <td>
 
-                    <button
-                        class="btn-tabla btn-tabla-modificar"
-                        type="button"
-                    >
+                    <div class="acciones-tabla">
 
-                        ✏️ Modificar
+                        <button
+                            type="button"
+                            class="btn-tabla btn-editar-tabla"
+                            data-indice="${indiceReal}"
+                        >
+                            ✏️
+                        </button>
 
-                    </button>
+                        <button
+                            type="button"
+                            class="btn-tabla btn-eliminar-tabla"
+                            data-indice="${indiceReal}"
+                        >
+                            🗑️
+                        </button>
 
-
-                    <button
-                        class="btn-tabla btn-tabla-eliminar"
-                        type="button"
-                    >
-
-                        🗑️ Eliminar
-
-                    </button>
+                    </div>
 
                 </td>
 
             `;
-
-
-            // ==================================================
-            // ÍNDICE REAL
-            // ==================================================
-
-            const indiceReal =
-                guias.findIndex(
-                    function (g) {
-
-                        return (
-                            g.guia ===
-                            item.guia
-                        );
-
-                    }
-                );
-
-
-            // ==================================================
-            // MODIFICAR DESDE TABLA
-            // ==================================================
-
-            const botonModificarTabla =
-                fila.querySelector(
-                    ".btn-tabla-modificar"
-                );
-
-
-            botonModificarTabla.addEventListener(
-                "click",
-                function () {
-
-                    seleccionarGuia(
-                        indiceReal
-                    );
-
-                }
-            );
-
-
-            // ==================================================
-            // ELIMINAR DESDE TABLA
-            // ==================================================
-
-            const botonEliminarTabla =
-                fila.querySelector(
-                    ".btn-tabla-eliminar"
-                );
-
-
-            botonEliminarTabla.addEventListener(
-                "click",
-                function () {
-
-                    eliminarDesdeTabla(
-                        indiceReal
-                    );
-
-                }
-            );
 
 
             tablaGuias.appendChild(
@@ -1384,888 +1495,483 @@ function mostrarGuias() {
     );
 
 
-// ======================================================
-// CONTADOR
-// ======================================================
+    agregarEventosTabla();
 
-    contador.textContent =
-        guiasMostrar.length +
-        (
-            guiasMostrar.length === 1
-                ? " guía"
-                : " guías"
+}
+
+
+/* =========================================================
+   EVITAR HTML NO DESEADO
+========================================================= */
+
+function escaparHTML(valor) {
+
+    if (
+        valor === undefined ||
+        valor === null
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(valor)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
         );
 
 }
 
 
-// ======================================================
-// 14. LIMPIAR FORMULARIO
-// ======================================================
-
-function limpiarFormulario() {
-
-    guiaInput.value = "";
-
-    numeroRutaInput.value = "";
-
-    fechaInput.value = "";
-
-    placaInput.value = "";
-
-    lugarInput.value = "";
-
-    montoInput.value = "";
-
-    montoDeducibleInput.value = "0";
-
-    totalPagarInput.value = "";
-
-    hojasInput.value = "";
-
-    estadoInput.value = "";
-
-    guiaInput.focus();
-
-}
-
-
-// ======================================================
-// 15. AGREGAR GUÍA
-// ======================================================
-
-botonAgregar.addEventListener(
-    "click",
-    function () {
-
-        const guia =
-            guiaInput.value.trim();
-
-
-        const numeroRuta =
-            numeroRutaInput.value;
-
-
-        const fecha =
-            fechaInput.value;
-
-
-        const placa =
-            placaInput.value
-                .trim()
-                .toUpperCase();
-
-
-        const lugar =
-            lugarInput.value.trim();
-
-
-        const monto =
-            Number(montoInput.value);
-
-
-        const montoDeducible =
-            Number(
-                montoDeducibleInput.value
-            ) || 0;
-
-
-        const hojas =
-            Number(hojasInput.value);
-
-
-        const estado =
-            estadoInput.value;
-
-
-// ==================================================
-// VALIDAR CAMPOS
-// ==================================================
-
-        if (
-            guia === "" ||
-            numeroRuta === "" ||
-            fecha === "" ||
-            placa === "" ||
-            lugar === "" ||
-            montoInput.value === "" ||
-            hojasInput.value === "" ||
-            estado === ""
-        ) {
-
-            mostrarMensaje(
-                "⚠️ Complete todos los campos.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR RUTA
-// ==================================================
-
-        if (
-            Number(numeroRuta) < 0
-        ) {
-
-            mostrarMensaje(
-                "⚠️ El número de ruta no puede ser negativo.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR MONTO
-// ==================================================
-
-        if (
-            monto <= 0
-        ) {
-
-            mostrarMensaje(
-                "⚠️ El monto debe ser mayor que cero.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR DEDUCIBLE
-// ==================================================
-
-        if (
-            montoDeducible < 0
-        ) {
-
-            mostrarMensaje(
-                "⚠️ El monto deducible no puede ser negativo.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR DEDUCIBLE NO MAYOR AL MONTO
-// ==================================================
-
-        if (
-            montoDeducible > monto
-        ) {
-
-            mostrarMensaje(
-                "⚠️ El monto deducible no puede ser mayor que el monto de la factura.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR HOJAS
-// ==================================================
-
-        if (
-            hojas < 1 ||
-            hojas > 10
-        ) {
-
-            mostrarMensaje(
-                "⚠️ La cantidad de hojas debe estar entre 1 y 10.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VERIFICAR GUÍA DUPLICADA
-// ==================================================
-
-        const existe =
-            guias.some(
-                function (item) {
-
-                    return (
-                        item.guia || ""
-                    )
-                        .toLowerCase() ===
-                        guia.toLowerCase();
-
-                }
-            );
-
-
-        if (existe) {
-
-            mostrarMensaje(
-                "⚠️ El número de guía ya existe.",
-                "advertencia"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// CALCULAR TOTAL
-// ==================================================
-
-        const totalPagar =
-            monto -
-            montoDeducible;
-
-
-// ==================================================
-// CREAR GUÍA
-// ==================================================
-
-        const nuevaGuia = {
-
-            guia:
-                guia,
-
-            numeroRuta:
-                Number(numeroRuta),
-
-            fecha:
-                fecha,
-
-            placa:
-                placa,
-
-            lugar:
-                lugar,
-
-            monto:
-                monto,
-
-            montoDeducible:
-                montoDeducible,
-
-            totalPagar:
-                totalPagar,
-
-            hojas:
-                hojas,
-
-            estado:
-                estado
-
-        };
-
-
-// ==================================================
-// AGREGAR
-// ==================================================
-
-        guias.push(
-            nuevaGuia
-        );
-
-
-        guardarDatos();
-
-        actualizarFiltroRutas();
-
-        actualizarFiltroPlacas();
-
-        mostrarGuias();
-
-        limpiarFormulario();
-
-
-        mostrarMensaje(
-            "✅ Guía agregada y guardada correctamente.",
-            "exito"
-        );
-
-    }
-);
-
-
-// ======================================================
-// 16. OBTENER GUÍA
-// ======================================================
-
-botonObtener.addEventListener(
-    "click",
-    function () {
-
-        const numeroGuia =
-            guiaInput.value.trim();
-
-
-        if (
-            numeroGuia === ""
-        ) {
-
-            mostrarMensaje(
-                "⚠️ Escriba el número de guía.",
-                "advertencia"
-            );
-
-            return;
-
-        }
-
-
-        const resultado =
-            guias.find(
-                function (item) {
-
-                    return (
-                        item.guia || ""
-                    )
-                        .toLowerCase() ===
-                        numeroGuia.toLowerCase();
-
-                }
-            );
-
-
-        if (!resultado) {
-
-            mostrarMensaje(
-                "❌ No se encontró la guía.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        guiaInput.value =
-            resultado.guia;
-
-
-        numeroRutaInput.value =
-            resultado.numeroRuta || "";
-
-
-        fechaInput.value =
-            resultado.fecha;
-
-
-        placaInput.value =
-            resultado.placa || "";
-
-
-        lugarInput.value =
-            resultado.lugar;
-
-
-        montoInput.value =
-            resultado.monto;
-
-
-        montoDeducibleInput.value =
-            resultado.montoDeducible || 0;
-
-
-        totalPagarInput.value =
-            (
-                resultado.totalPagar ??
-                (
-                    Number(resultado.monto || 0) -
-                    Number(resultado.montoDeducible || 0)
-                )
-            ).toFixed(2);
-
-
-        hojasInput.value =
-            resultado.hojas || "";
-
-
-        estadoInput.value =
-            resultado.estado;
-
-
-        buscarGuiaInput.value =
-            resultado.guia;
-
-
-        mostrarGuias();
-
-
-        mostrarMensaje(
-            "🔍 Guía encontrada. Todos los datos fueron cargados.",
-            "exito"
-        );
-
-    }
-);
-
-
-// ======================================================
-// 17. MODIFICAR GUÍA
-// ======================================================
-
-botonModificar.addEventListener(
-    "click",
-    function () {
-
-        const numeroGuia =
-            guiaInput.value.trim();
-
-
-        if (
-            numeroGuia === ""
-        ) {
-
-            mostrarMensaje(
-                "⚠️ Escriba el número de guía.",
-                "advertencia"
-            );
-
-            return;
-
-        }
-
-
-        const indice =
-            guias.findIndex(
-                function (item) {
-
-                    return (
-                        item.guia || ""
-                    )
-                        .toLowerCase() ===
-                        numeroGuia.toLowerCase();
-
-                }
-            );
-
-
-        if (
-            indice === -1
-        ) {
-
-            mostrarMensaje(
-                "❌ No existe esa guía.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR CAMPOS
-// ==================================================
-
-        if (
-            numeroRutaInput.value === "" ||
-            fechaInput.value === "" ||
-            placaInput.value.trim() === "" ||
-            lugarInput.value.trim() === "" ||
-            montoInput.value === "" ||
-            hojasInput.value === "" ||
-            estadoInput.value === ""
-        ) {
-
-            mostrarMensaje(
-                "⚠️ Complete todos los campos correctamente.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const monto =
-            Number(montoInput.value);
-
-
-        const montoDeducible =
-            Number(
-                montoDeducibleInput.value
-            ) || 0;
-
-
-        const numeroRuta =
-            Number(
-                numeroRutaInput.value
-            );
-
-
-        const hojas =
-            Number(
-                hojasInput.value
-            );
-
-
-// ==================================================
-// VALIDAR RUTA
-// ==================================================
-
-        if (
-            numeroRuta < 0
-        ) {
-
-            mostrarMensaje(
-                "⚠️ El número de ruta no puede ser negativo.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR MONTO
-// ==================================================
-
-        if (
-            monto <= 0
-        ) {
-
-            mostrarMensaje(
-                "⚠️ El monto debe ser mayor que cero.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR DEDUCIBLE
-// ==================================================
-
-        if (
-            montoDeducible < 0
-        ) {
-
-            mostrarMensaje(
-                "⚠️ El monto deducible no puede ser negativo.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR DEDUCIBLE VS MONTO
-// ==================================================
-
-        if (
-            montoDeducible > monto
-        ) {
-
-            mostrarMensaje(
-                "⚠️ El monto deducible no puede ser mayor que el monto de la factura.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// VALIDAR HOJAS
-// ==================================================
-
-        if (
-            hojas < 1 ||
-            hojas > 10
-        ) {
-
-            mostrarMensaje(
-                "⚠️ La cantidad de hojas debe estar entre 1 y 10.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-// ==================================================
-// CALCULAR TOTAL
-// ==================================================
-
-        const totalPagar =
-            monto -
-            montoDeducible;
-
-
-// ==================================================
-// ACTUALIZAR GUÍA
-// ==================================================
-
-        guias[indice].numeroRuta =
-            numeroRuta;
-
-
-        guias[indice].fecha =
-            fechaInput.value;
-
-
-        guias[indice].placa =
-            placaInput.value
-                .trim()
-                .toUpperCase();
-
-
-        guias[indice].lugar =
-            lugarInput.value.trim();
-
-
-        guias[indice].monto =
-            monto;
-
-
-        guias[indice].montoDeducible =
-            montoDeducible;
-
-
-        guias[indice].totalPagar =
-            totalPagar;
-
-
-        guias[indice].hojas =
-            hojas;
-
-
-        guias[indice].estado =
-            estadoInput.value;
-
-
-        guardarDatos();
-
-        actualizarFiltroRutas();
-
-        actualizarFiltroPlacas();
-
-        mostrarGuias();
-
-
-        mostrarMensaje(
-            "✏️ Guía modificada correctamente.",
-            "exito"
-        );
-
-    }
-);
-
-
-// ======================================================
-// 18. ELIMINAR GUÍA
-// ======================================================
-
-botonEliminar.addEventListener(
-    "click",
-    function () {
-
-        const numeroGuia =
-            guiaInput.value.trim();
-
-
-        if (
-            numeroGuia === ""
-        ) {
-
-            mostrarMensaje(
-                "⚠️ Escriba el número de guía.",
-                "advertencia"
-            );
-
-            return;
-
-        }
-
-
-        const indice =
-            guias.findIndex(
-                function (item) {
-
-                    return (
-                        item.guia || ""
-                    )
-                        .toLowerCase() ===
-                        numeroGuia.toLowerCase();
-
-                }
-            );
-
-
-        if (
-            indice === -1
-        ) {
-
-            mostrarMensaje(
-                "❌ No existe esa guía.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const confirmar =
-            confirm(
-                "¿Está seguro de eliminar la guía " +
-                numeroGuia +
-                "?"
-            );
-
-
-        if (!confirmar) {
-
-            return;
-
-        }
-
-
-        guias.splice(
-            indice,
-            1
-        );
-
-
-        guardarDatos();
-
-        actualizarFiltroRutas();
-
-        actualizarFiltroPlacas();
-
-        mostrarGuias();
-
-        limpiarFormulario();
-
-        buscarGuiaInput.value = "";
-
-
-        mostrarMensaje(
-            "🗑️ Guía eliminada correctamente.",
-            "exito"
-        );
-
-    }
-);
-
-
-// ======================================================
-// 19. SELECCIONAR GUÍA DESDE TABLA
-// ======================================================
-
-function seleccionarGuia(indice) {
+/* =========================================================
+   SELECCIONAR GUÍA
+========================================================= */
+
+function cargarGuiaEnFormulario(
+    indice
+) {
 
     const item =
-        guias[indice];
+        Gyguias[indice];
 
 
     if (!item) {
+
+        mostrarMensaje(
+            "❌ No se encontró la guía.",
+            "error"
+        );
 
         return;
 
     }
 
 
-    guiaInput.value =
-        item.guia;
+    indiceSeleccionado =
+        indice;
 
 
-    numeroRutaInput.value =
-        item.numeroRuta || "";
+    guia.value =
+        item.guia || "";
 
 
-    fechaInput.value =
-        item.fecha;
+    numeroRuta.value =
+        item.numeroRuta ?? "";
 
 
-    placaInput.value =
+    fecha.value =
+        item.fecha || "";
+
+
+    placa.value =
         item.placa || "";
 
 
-    lugarInput.value =
-        item.lugar;
+    lugar.value =
+        item.lugar || "";
 
 
-    montoInput.value =
-        item.monto;
+    monto.value =
+        item.monto ?? "";
 
 
-    montoDeducibleInput.value =
-        item.montoDeducible || 0;
+    montoDeducible.value =
+        item.montoDeducible ?? 0;
 
 
-    totalPagarInput.value =
-        (
-            item.totalPagar ??
-            (
-                Number(item.monto || 0) -
-                Number(item.montoDeducible || 0)
-            )
+    totalPagar.value =
+        Number(
+            item.totalPagar ?? 0
         ).toFixed(2);
 
 
-    hojasInput.value =
-        item.hojas || "";
+    hojas.value =
+        item.hojas ?? "";
 
 
-    estadoInput.value =
-        item.estado;
-
-
-    calcularTotal();
-
-
-    mostrarMensaje(
-        "✏️ Guía seleccionada. Modifique los datos y presione Modificar.",
-        "advertencia"
-    );
+    estado.value =
+        item.estado || "";
 
 
     window.scrollTo({
-
         top: 0,
-
         behavior: "smooth"
-
     });
+
+
+    mostrarMensaje(
+        `✏️ Guía ${item.guia} cargada para modificar.`,
+        "exito"
+    );
 
 }
 
 
-// ======================================================
-// 20. ELIMINAR DESDE TABLA
-// ======================================================
+/* =========================================================
+   EVENTOS DE LOS BOTONES DE LA TABLA
+========================================================= */
 
-function eliminarDesdeTabla(indice) {
+function agregarEventosTabla() {
+
+    const botonesEditar =
+        document.querySelectorAll(
+            ".btn-editar-tabla"
+        );
+
+
+    botonesEditar.forEach(
+        function (boton) {
+
+            boton.addEventListener(
+                "click",
+                function () {
+
+                    const indice =
+                        Number(
+                            this.dataset.indice
+                        );
+
+                    cargarGuiaEnFormulario(
+                        indice
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    const botonesEliminar =
+        document.querySelectorAll(
+            ".btn-eliminar-tabla"
+        );
+
+
+    botonesEliminar.forEach(
+        function (boton) {
+
+            boton.addEventListener(
+                "click",
+                function () {
+
+                    const indice =
+                        Number(
+                            this.dataset.indice
+                        );
+
+                    eliminarGuiaPorIndice(
+                        indice
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   AGREGAR GUÍA
+========================================================= */
+
+if (agregar) {
+
+    agregar.addEventListener(
+        "click",
+        function () {
+
+            if (!validarFormulario()) {
+
+                return;
+
+            }
+
+
+            const datos =
+                obtenerDatosFormulario();
+
+
+            const guiaExiste =
+                Gyguias.some(
+                    function (item) {
+
+                        return (
+                            String(item.guia)
+                                .trim()
+                                .toLowerCase() ===
+                            datos.guia
+                                .trim()
+                                .toLowerCase()
+                        );
+
+                    }
+                );
+
+
+            if (guiaExiste) {
+
+                mostrarMensaje(
+                    `❌ La guía ${datos.guia} ya existe.`,
+                    "error"
+                );
+
+                guia.focus();
+
+                return;
+
+            }
+
+
+            Gyguias.push(
+                datos
+            );
+
+
+            if (!guardarDatos()) {
+
+                return;
+
+            }
+
+
+            actualizarFiltroRutas();
+
+            actualizarFiltroPlacas();
+
+            mostrarGuias();
+
+            limpiarFormulario();
+
+
+            mostrarMensaje(
+                `✅ Guía ${datos.guia} agregada correctamente y guardada en Gyguias.`,
+                "exito"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   OBTENER GUÍA
+========================================================= */
+
+if (obtener) {
+
+    obtener.addEventListener(
+        "click",
+        function () {
+
+            const numeroGuia =
+                guia.value.trim();
+
+
+            if (!numeroGuia) {
+
+                mostrarMensaje(
+                    "❌ Escriba un número de guía para buscar.",
+                    "error"
+                );
+
+                guia.focus();
+
+                return;
+
+            }
+
+
+            const indice =
+                Gyguias.findIndex(
+                    function (item) {
+
+                        return (
+                            String(item.guia)
+                                .trim()
+                                .toLowerCase() ===
+                            numeroGuia
+                                .toLowerCase()
+                        );
+
+                    }
+                );
+
+
+            if (indice === -1) {
+
+                mostrarMensaje(
+                    `❌ No se encontró la guía ${numeroGuia}.`,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            cargarGuiaEnFormulario(
+                indice
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   MODIFICAR GUÍA
+========================================================= */
+
+if (modificar) {
+
+    modificar.addEventListener(
+        "click",
+        function () {
+
+            if (!validarFormulario()) {
+
+                return;
+
+            }
+
+
+            const datos =
+                obtenerDatosFormulario();
+
+
+            const guiaOriginal =
+                guia.value
+                    .trim()
+                    .toLowerCase();
+
+
+            const indice =
+                Gyguias.findIndex(
+                    function (item) {
+
+                        return (
+                            String(item.guia)
+                                .trim()
+                                .toLowerCase() ===
+                            guiaOriginal
+                        );
+
+                    }
+                );
+
+
+            if (indice === -1) {
+
+                mostrarMensaje(
+                    `❌ No se encontró la guía ${datos.guia} para modificar.`,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const guiaDuplicada =
+                Gyguias.some(
+                    function (item, i) {
+
+                        return (
+                            i !== indice &&
+                            String(item.guia)
+                                .trim()
+                                .toLowerCase() ===
+                            guiaOriginal
+                        );
+
+                    }
+                );
+
+
+            if (guiaDuplicada) {
+
+                mostrarMensaje(
+                    "❌ Ya existe otra guía con ese número.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            Gyguias[indice] =
+                datos;
+
+
+            if (!guardarDatos()) {
+
+                return;
+
+            }
+
+
+            actualizarFiltroRutas();
+
+            actualizarFiltroPlacas();
+
+            mostrarGuias();
+
+            limpiarFormulario();
+
+
+            mostrarMensaje(
+                `✅ Guía ${datos.guia} modificada correctamente.`,
+                "exito"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ELIMINAR GUÍA POR ÍNDICE
+========================================================= */
+
+function eliminarGuiaPorIndice(
+    indice
+) {
 
     const item =
-        guias[indice];
+        Gyguias[indice];
 
 
     if (!item) {
+
+        mostrarMensaje(
+            "❌ No se encontró la guía.",
+            "error"
+        );
 
         return;
 
@@ -2274,9 +1980,7 @@ function eliminarDesdeTabla(indice) {
 
     const confirmar =
         confirm(
-            "¿Desea eliminar la guía " +
-            item.guia +
-            "?"
+            `¿Está seguro de eliminar la guía ${item.guia}?`
         );
 
 
@@ -2287,13 +1991,18 @@ function eliminarDesdeTabla(indice) {
     }
 
 
-    guias.splice(
+    Gyguias.splice(
         indice,
         1
     );
 
 
-    guardarDatos();
+    if (!guardarDatos()) {
+
+        return;
+
+    }
+
 
     actualizarFiltroRutas();
 
@@ -2303,157 +2012,243 @@ function eliminarDesdeTabla(indice) {
 
     limpiarFormulario();
 
-    buscarGuiaInput.value = "";
-
 
     mostrarMensaje(
-        "🗑️ Guía " +
-        item.guia +
-        " eliminada correctamente.",
+        `🗑️ Guía ${item.guia} eliminada correctamente.`,
         "exito"
     );
 
 }
 
 
-// ======================================================
-// 21. BOTÓN LIMPIAR
-// ======================================================
+/* =========================================================
+   ELIMINAR GUÍA DESDE FORMULARIO
+========================================================= */
 
-botonLimpiar.addEventListener(
-    "click",
-    function () {
+if (eliminar) {
 
-        limpiarFormulario();
+    eliminar.addEventListener(
+        "click",
+        function () {
 
-        mostrarMensaje(
-            "🔄 Formulario limpiado."
-        );
-
-    }
-);
+            const numeroGuia =
+                guia.value.trim();
 
 
-// ======================================================
-// 22. BÚSQUEDA AUTOMÁTICA
-// ======================================================
+            if (!numeroGuia) {
 
-buscarGuiaInput.addEventListener(
-    "input",
-    function () {
+                mostrarMensaje(
+                    "❌ Escriba el número de guía que desea eliminar.",
+                    "error"
+                );
 
-        mostrarGuias();
+                guia.focus();
 
-    }
-);
+                return;
 
-
-// ======================================================
-// 23. FILTRO POR RUTA
-// ======================================================
-
-filtrarRutaInput.addEventListener(
-    "change",
-    function () {
-
-        mostrarGuias();
-
-    }
-);
+            }
 
 
-// ======================================================
-// 24. FILTRO POR PLACA
-// ======================================================
+            const indice =
+                Gyguias.findIndex(
+                    function (item) {
 
-filtrarPlacaInput.addEventListener(
-    "change",
-    function () {
+                        return (
+                            String(item.guia)
+                                .trim()
+                                .toLowerCase() ===
+                            numeroGuia
+                                .toLowerCase()
+                        );
 
-        mostrarGuias();
-
-    }
-);
-
-
-// ======================================================
-// 25. FILTRO POR ESTADO
-// ======================================================
-
-filtrarEstadoInput.addEventListener(
-    "change",
-    function () {
-
-        mostrarGuias();
-
-    }
-);
+                    }
+                );
 
 
-// ======================================================
-// 26. ORDENAR
-// ======================================================
+            if (indice === -1) {
 
-ordenarInput.addEventListener(
-    "change",
-    function () {
+                mostrarMensaje(
+                    `❌ No se encontró la guía ${numeroGuia}.`,
+                    "error"
+                );
 
-        mostrarGuias();
+                return;
 
-    }
-);
+            }
 
 
-// ======================================================
-// 27. QUITAR FILTROS
-// ======================================================
+            eliminarGuiaPorIndice(
+                indice
+            );
 
-botonQuitarFiltros.addEventListener(
-    "click",
-    function () {
+        }
+    );
 
-        buscarGuiaInput.value = "";
-
-        filtrarRutaInput.value =
-            "todos";
-
-        filtrarPlacaInput.value =
-            "todos";
-
-        filtrarEstadoInput.value =
-            "todos";
-
-        ordenarInput.value =
-            "guiaAsc";
+}
 
 
-        mostrarGuias();
+/* =========================================================
+   BOTÓN LIMPIAR
+========================================================= */
+
+if (limpiar) {
+
+    limpiar.addEventListener(
+        "click",
+        function () {
+
+            limpiarFormulario();
+
+            mostrarMensaje(
+                "🔄 Formulario limpiado.",
+                "exito"
+            );
+
+        }
+    );
+
+}
 
 
-        mostrarMensaje(
-            "🔄 Se quitaron los filtros.",
-            "normal"
-        );
+/* =========================================================
+   BÚSQUEDA EN TIEMPO REAL
+========================================================= */
 
-    }
-);
+if (buscarGuia) {
+
+    buscarGuia.addEventListener(
+        "input",
+        function () {
+
+            mostrarGuias();
+
+        }
+    );
+
+}
 
 
-// ======================================================
-// 28. CARGAR DATOS AL ABRIR
-// ======================================================
+/* =========================================================
+   FILTRO POR RUTA
+========================================================= */
+
+if (filtrarRuta) {
+
+    filtrarRuta.addEventListener(
+        "change",
+        function () {
+
+            mostrarGuias();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FILTRO POR PLACA
+========================================================= */
+
+if (filtrarPlaca) {
+
+    filtrarPlaca.addEventListener(
+        "change",
+        function () {
+
+            mostrarGuias();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FILTRO POR ESTADO
+========================================================= */
+
+if (filtrarEstado) {
+
+    filtrarEstado.addEventListener(
+        "change",
+        function () {
+
+            mostrarGuias();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ORDENAR
+========================================================= */
+
+if (ordenar) {
+
+    ordenar.addEventListener(
+        "change",
+        function () {
+
+            mostrarGuias();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   QUITAR FILTROS
+========================================================= */
+
+if (quitarFiltros) {
+
+    quitarFiltros.addEventListener(
+        "click",
+        function () {
+
+            buscarGuia.value = "";
+
+            filtrarRuta.value =
+                "todos";
+
+            filtrarPlaca.value =
+                "todos";
+
+            filtrarEstado.value =
+                "todos";
+
+            ordenar.value =
+                "guiaAsc";
+
+
+            mostrarGuias();
+
+
+            mostrarMensaje(
+                "🔄 Se quitaron todos los filtros.",
+                "exito"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INICIO DEL SISTEMA
+========================================================= */
+
+cargarDatos();
 
 actualizarFiltroRutas();
 
 actualizarFiltroPlacas();
 
-mostrarGuias();
+calcularTotal();
 
-
-// ======================================================
-// 29. MENSAJE INICIAL
-// ======================================================
-
-mostrarMensaje(
-    "📂 Sistema listo. Las guías guardadas se cargaron correctamente."
-);
+verificarSesion();
